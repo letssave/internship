@@ -386,11 +386,28 @@ void applySettings( void )
 
 void accslr_configIntterupts()
 {
-
 	//regs to write
 
+	//Config for interupt2
+	writeRegister(LIS3DH_INT2_CFG, 0x7f);
 }
+/*
+ * Configures the click options
+ * Single click
+ */
+void accslr_configClick()
+{
 
+	//Sets the CLICK interrupts on INT2-Pin
+	writeRegister(LIS3DH_CTRL_REG6, 0x80);
+
+	// Enable single-click
+	writeRegister(LIS3DH_CLICK_CFG, 0x15);
+
+	//High-pass filtering, to mediate debouncing and jittering
+	writeRegister(LIS3DH_CTRL_REG2, 0x24);
+
+}
 
 volatile uint8_t accslr_irq = 0;
 

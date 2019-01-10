@@ -83,7 +83,12 @@
 #define LIS3DH_INT1_CFG               0x30
 #define LIS3DH_INT1_SRC               0x31
 #define LIS3DH_INT1_THS               0x32
-#define LIS3DH_INT1_DURATION          0x33
+
+#define LIS3DH_INT2_DURATION          0x33
+#define LIS3DH_INT2_CFG               0x34
+#define LIS3DH_INT2_SRC               0x35
+#define LIS3DH_INT2_THS               0x36
+#define LIS3DH_INT2_DURATION          0x37
 
 #define LIS3DH_CLICK_CFG              0x38
 #define LIS3DH_CLICK_SRC              0x39
@@ -115,6 +120,7 @@ int16_t readRawAccelZ( void );
 float readFloatAccelZ( void );
 void applySettings( void );
 void accslr_configIntterupts();
+void accslr_configClick();
 
 
 
