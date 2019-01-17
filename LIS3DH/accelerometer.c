@@ -388,8 +388,29 @@ void accslr_configIntterupts()
 {
 	//regs to write
 
+	//HR/Normal/ Low-power mode (1 Hz), activate all axises
+	writeRegister(LIS3DH_CTRL_REG1, 0x17);
+
+	//High-pass filtering, to mediate debouncing and jittering
+	//writeRegister(LIS3DH_CTRL_REG2, 0x24);
+
+	//Latching int2 until its read
+	writeRegister(LIS3DH_CTRL_REG5,0x3);
+
+	//Sets the CLICK interrupts on INT2-Pin
+	writeRegister(LIS3DH_CTRL_REG6, 0x80);
+
 	//Config for interupt2
 	writeRegister(LIS3DH_INT2_CFG, 0x7f);
+
+	//Setting the time limit
+	writeRegister(LIS3DH_TIME_LIMIT, 0x40);
+
+	//Enable single-click
+	writeRegister(LIS3DH_CLICK_CFG, 0x15);
+
+	//Setting the time window
+	writeRegister(LIS3DH_TIME_WINDOW, 0x40);
 }
 /*
  * Configures the click options
@@ -398,15 +419,8 @@ void accslr_configIntterupts()
 void accslr_configClick()
 {
 
-	//Sets the CLICK interrupts on INT2-Pin
-	writeRegister(LIS3DH_CTRL_REG6, 0x80);
-
 	// Enable single-click
 	writeRegister(LIS3DH_CLICK_CFG, 0x15);
-
-	//High-pass filtering, to mediate debouncing and jittering
-	writeRegister(LIS3DH_CTRL_REG2, 0x24);
-
 }
 
 volatile uint8_t accslr_irq = 0;
@@ -426,7 +440,6 @@ void acc_int1_callback(void)
 
 
 status_t accelerometer_init(void){
-
     i2c_master_config_t masterConfig;
     status_t reVal = kStatus_Fail;
 
@@ -467,6 +480,7 @@ status_t accelerometer_init(void){
 	applySettings();
 
 	accslr_configIntterupts();
+	//accslr_configClick();
 
 	//reset IRQ pending
     uint8_t dataRead;

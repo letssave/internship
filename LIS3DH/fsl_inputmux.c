@@ -1,6 +1,6 @@
 /*
  * The Clear BSD License
- * Copyright (c) 2013 - 2015, Freescale Semiconductor, Inc.
+ * Copyright (c) 2016, Freescale Semiconductor, Inc.
  * Copyright 2016-2017 NXP
  * All rights reserved.
  *
@@ -32,84 +32,39 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "fsl_device_registers.h"
-#include "fsl_debug_console.h"
-#include "board.h"
-
-#include "pin_mux.h"
-#include <stdbool.h>
-
-#include "accelerometer.h"
 #include "fsl_inputmux.h"
-#include "fsl_pint.h"
+
 /*******************************************************************************
  * Definitions
- ******************************************************************************/
-#define DEMO_PINT_PIN_INT2_SRC kINPUTMUX_GpioPort0Pin30ToPintsel
-
-/*******************************************************************************
- * Prototypes
  ******************************************************************************/
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
-void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
+
+void INPUTMUX_Init(INPUTMUX_Type *base)
 {
-    PRINTF("\f\r\nPINT Pin Interrupt %d event detected.", pintr);
+#if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
+    CLOCK_EnableClock(kCLOCK_InputMux);
+#endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 }
 
-
-/*!
- * @brief Main function
- */
-int main(void)
+void INPUTMUX_AttachSignal(INPUTMUX_Type *base, uint32_t index, inputmux_connection_t connection)
 {
-    char ch;
+    uint32_t pmux_id;
+    uint32_t output_id;
 
-    /* Init board hardware. */
-    /* attach 12 MHz clock to FLEXCOMM0 (debug console) */
-    CLOCK_AttachClk(BOARD_DEBUG_UART_CLK_ATTACH);
+    /* extract pmux to be used */
+    pmux_id = ((uint32_t)(connection)) >> PMUX_SHIFT;
+    /*  extract function number */
+    output_id = ((uint32_t)(connection)) & 0xffffU;
+    /* programm signal */
+    *(volatile uint32_t *)(((uint32_t)base) + pmux_id + (index * 4)) = output_id;
+}
 
-    //Interupt clock
-    CLOCK_AttachClk(kFRO12M_to_FLEXCOMM0);
-
-    BOARD_InitPins();
-    BOARD_BootClockFROHF48M();
-    BOARD_InitDebugConsole();
-
-    /*Callback setup start*/
-    /* Connect trigger sources to PINT */
-    INPUTMUX_Init(INPUTMUX);
-    INPUTMUX_AttachSignal(INPUTMUX, kPINT_PinInt2, DEMO_PINT_PIN_INT2_SRC);
-    /* Turnoff clock to inputmux to save power. Clock is only needed to make changes */
-    INPUTMUX_Deinit(INPUTMUX);
-    /* Initialize PINT */
-    PINT_Init(PINT);
-    /* Setup Pin Interrupt 2 for both rising and falling edge */
-    PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableBothEdges, pint_intr_callback);
-    /* Enable callbacks for PINT */
-    PINT_EnableCallback(PINT);
-    /*Callback setup finished*/
-
-    PRINTF("hello world.\r\n");
-    accelerometer_init();
-    PRINTF("A\r\n");
-
-    while (1)
-    {
-        __WFI();
-        //Checking if a interupt is registered
-        //PRINTF("Looking for clicks\n");
-        uint8_t interuptCheck;
-    	readRegister(&interuptCheck, LIS3DH_INT2_SRC);
-        //readRegister(&interuptCheck, LIS3DH_WHO_AM_I);
-    	//if(interuptCheck > 0){
-    	//	PRINTF("Click found\n");
-    	//	break;
-    	//}
-        //PRINTF(interuptCheck);
-
-
-    }
+void INPUTMUX_Deinit(INPUTMUX_Type *base)
+{
+#if !(defined(FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL) && FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL)
+    CLOCK_DisableClock(kCLOCK_InputMux);
+#endif /* FSL_SDK_DISABLE_DRIVER_CLOCK_CONTROL */
 }
