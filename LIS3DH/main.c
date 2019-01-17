@@ -101,8 +101,8 @@ int main(void)
         __WFI();
         //Checking if a interupt is registered
         //PRINTF("Looking for clicks\n");
-        uint8_t interuptCheck;
-    	readRegister(&interuptCheck, LIS3DH_INT2_SRC);
+        //uint8_t interuptCheck;
+    	//readRegister(&interuptCheck, LIS3DH_INT2_SRC);
         //readRegister(&interuptCheck, LIS3DH_WHO_AM_I);
     	//if(interuptCheck > 0){
     	//	PRINTF("Click found\n");
