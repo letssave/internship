@@ -54,8 +54,11 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
+volatile uint8_t accslr_irq2 = 0;
+
 void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
 {
+	accslr_irq2 = 1;
     PRINTF("\f\r\nPINT Pin Interrupt %d event detected.", pintr);
 }
 
@@ -94,22 +97,18 @@ int main(void)
 
     PRINTF("hello world.\r\n");
     accelerometer_init();
-    PRINTF("A\r\n");
+
+    uint8_t identity;
+    readRegister(&identity, LIS3DH_WHO_AM_I);
+	if(identity > 0){
+		PRINTF("ACC identity checked\n");
+	}
+    PRINTF("ACC init done, waiting for IR\r\n");
 
     while (1)
     {
+        //Checking if an interrupt is registered
         __WFI();
-        //Checking if a interupt is registered
-        //PRINTF("Looking for clicks\n");
-        //uint8_t interuptCheck;
-    	//readRegister(&interuptCheck, LIS3DH_INT2_SRC);
-        //readRegister(&interuptCheck, LIS3DH_WHO_AM_I);
-    	//if(interuptCheck > 0){
-    	//	PRINTF("Click found\n");
-    	//	break;
-    	//}
-        //PRINTF(interuptCheck);
-
 
     }
 }

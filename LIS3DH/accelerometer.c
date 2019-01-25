@@ -388,29 +388,41 @@ void accslr_configIntterupts()
 {
 	//regs to write
 
-	//HR/Normal/ Low-power mode (1 Hz), activate all axises
-	writeRegister(LIS3DH_CTRL_REG1, 0x17);
-
 	//High-pass filtering, to mediate debouncing and jittering
-	//writeRegister(LIS3DH_CTRL_REG2, 0x24);
+	writeRegister(LIS3DH_CTRL_REG2, 0x00);
 
-	//Latching int2 until its read
-	writeRegister(LIS3DH_CTRL_REG5,0x3);
 
 	//Sets the CLICK interrupts on INT2-Pin
 	writeRegister(LIS3DH_CTRL_REG6, 0x80);
+	//writeRegister(LIS3DH_CTRL_REG6, 0x0); //reset
 
-	//Config for interupt2
-	writeRegister(LIS3DH_INT2_CFG, 0x7f);
 
-	//Setting the time limit
-	writeRegister(LIS3DH_TIME_LIMIT, 0x40);
+	//Config for interupt2 - High event interrupt
+	writeRegister(LIS3DH_INT2_CFG, 0x42);
+	//writeRegister(LIS3DH_INT2_CFG, 0x0);
+
+	//Config. for threshold
+	writeRegister(LIS3DH_INT2_THS, 0x80);
+
+	//Setting the time limit, time limit to return under threshold
+	//writeRegister(LIS3DH_TIME_LIMIT, 0x40);
+	writeRegister(LIS3DH_TIME_LIMIT, 0x80);
+
+	//Setting the time latency, debouncing
+	//writeRegister(LIS3DH_TIME_LATENCY, )
+
+	//Setting the time window click, max time detection procedure can start
+	writeRegister(LIS3DH_TIME_WINDOW, 0x80);
 
 	//Enable single-click
 	writeRegister(LIS3DH_CLICK_CFG, 0x15);
 
-	//Setting the time window
-	writeRegister(LIS3DH_TIME_WINDOW, 0x40);
+	//Enable double-click
+	//writeRegister(LIS3DH_CLICK_CFG, 0x2A);
+
+	//Interupt high until src is read(0x80)
+	writeRegister(LIS3DH_CLICK_THS,0x1);
+
 }
 /*
  * Configures the click options
