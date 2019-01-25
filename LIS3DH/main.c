@@ -55,7 +55,6 @@
  * Code
  ******************************************************************************/
 volatile uint8_t accslr_irq2 = 0;
-
 void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
 {
 	accslr_irq2 = 1;
@@ -109,6 +108,11 @@ int main(void)
     {
         //Checking if an interrupt is registered
         __WFI();
+
+        if(accslr_irq2){
+        	accslr_irq2 = 0;
+        	PRINTF("Single-Click");
+        }
 
     }
 }
