@@ -67,7 +67,6 @@ void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
  */
 int main(void)
 {
-    char ch;
 
     /* Init board hardware. */
     /* attach 12 MHz clock to FLEXCOMM0 (debug console) */
@@ -103,7 +102,7 @@ int main(void)
 		PRINTF("ACC identity checked\n");
 	}
     PRINTF("ACC init done, waiting for IR\r\n");
-
+    uint8_t teller = 0;
     while (1)
     {
         //Checking if an interrupt is registered
@@ -111,7 +110,12 @@ int main(void)
 
         if(accslr_irq2){
         	accslr_irq2 = 0;
-        	PRINTF("Single-Click");
+        	teller++;
+        	uint8_t clk_src;
+        	readRegister(&clk_src, LIS3DH_CLICK_SRC);
+        	PRINTF("Click nr.%d, reg: %d",teller,clk_src);
+        	//float test = readFloatAccelX();
+        	//PRINTF("X: %d \r\n", test);
         }
 
     }
