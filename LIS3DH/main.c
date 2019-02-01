@@ -87,8 +87,8 @@ int main(void)
     INPUTMUX_Deinit(INPUTMUX);
     /* Initialize PINT */
     PINT_Init(PINT);
-    /* Setup Pin Interrupt 2 for both rising and falling edge */
-    PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableBothEdges, pint_intr_callback);
+    /* Setup Pin Interrupt 2 for rising edge */
+    PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableRiseEdge, pint_intr_callback);
     /* Enable callbacks for PINT */
     PINT_EnableCallback(PINT);
     /*Callback setup finished*/

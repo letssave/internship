@@ -402,7 +402,8 @@ void accslr_configIntterupts()
 	//writeRegister(LIS3DH_INT2_CFG, 0x0);
 
 	//Config. for threshold
-	writeRegister(LIS3DH_INT2_THS, 0xff);
+	//writeRegister(LIS3DH_INT2_THS, 0xff); //Max threshold
+	writeRegister(LIS3DH_INT2_THS, 0x20);
 
 	//Seting the time limit
 	writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
@@ -416,14 +417,13 @@ void accslr_configIntterupts()
 	//Setting the time window click, max time detection procedure can start
 	writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
 	//writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
-	//writeRegister(LIS3DH_TIME_WINDOW, 0xff);
+	writeRegister(LIS3DH_TIME_WINDOW, 0x80);
 
 	writeRegister(LIS3DH_CLICK_CFG, 0x00);
 	//Enable single-click
-	writeRegister(LIS3DH_CLICK_CFG, 0x15);
-
+	//writeRegister(LIS3DH_CLICK_CFG, 0x15);
 	//Enable double-click
-	//writeRegister(LIS3DH_CLICK_CFG, 0x2A);
+	writeRegister(LIS3DH_CLICK_CFG, 0x2a);
 
 	//Interupt high until src is read(0x80)
 	//writeRegister(LIS3DH_CLICK_THS, 0x80);
