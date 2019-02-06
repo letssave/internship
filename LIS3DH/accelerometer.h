@@ -13,6 +13,7 @@
 #include "board.h"
 #include <stdbool.h>
 #include "fsl_i2c.h"
+#include "fsl_pint.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -125,9 +126,11 @@ void accslr_configClick();
 
 
 extern volatile uint8_t accslr_irq;
+extern volatile uint8_t accslr_irq2;
 
 void acc_int0_callback(void);
 void acc_int1_callback(void);
+void acc_int2_callback(pint_pin_int_t pintr, uint32_t pmatch_status);
 
 status_t accelerometer_init(void);
 

@@ -45,7 +45,6 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define DEMO_PINT_PIN_INT2_SRC kINPUTMUX_GpioPort0Pin30ToPintsel
 
 /*******************************************************************************
  * Prototypes
@@ -54,12 +53,8 @@
 /*******************************************************************************
  * Code
  ******************************************************************************/
-volatile uint8_t accslr_irq2 = 0;
-void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
-{
-	accslr_irq2 = 1;
-    PRINTF("\f\r\nPINT Pin Interrupt %d event detected.", pintr);
-}
+
+
 
 
 /*!
@@ -71,40 +66,18 @@ int main(void)
     /* Init board hardware. */
     /* attach 12 MHz clock to FLEXCOMM0 (debug console) */
     CLOCK_AttachClk(BOARD_DEBUG_UART_CLK_ATTACH);
-
-    //Interupt clock
+    /*Interupt clock*/
     CLOCK_AttachClk(kFRO12M_to_FLEXCOMM0);
 
     BOARD_InitPins();
     BOARD_BootClockFROHF48M();
     BOARD_InitDebugConsole();
 
-    /*Callback setup start*/
-    /* Connect trigger sources to PINT */
-    INPUTMUX_Init(INPUTMUX);
-    INPUTMUX_AttachSignal(INPUTMUX, kPINT_PinInt2, DEMO_PINT_PIN_INT2_SRC);
-    /* Turnoff clock to inputmux to save power. Clock is only needed to make changes */
-    INPUTMUX_Deinit(INPUTMUX);
-    /* Initialize PINT */
-    PINT_Init(PINT);
-    /* Setup Pin Interrupt 2 for rising edge */
-    PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableRiseEdge, pint_intr_callback);
-    /* Enable callbacks for PINT */
-    PINT_EnableCallback(PINT);
-    /*Callback setup finished*/
-
-    PRINTF("hello world.\r\n");
+    PRINTF("Initializing the accelerometer.\r\n");
     accelerometer_init();
+    PRINTF("ACC init done, waiting for clicks\r\n");
 
-    uint8_t identity;
-    readRegister(&identity, LIS3DH_WHO_AM_I);
-	if(identity > 0){
-		PRINTF("ACC identity checked\n");
-	}
-    PRINTF("ACC init done, waiting for IR\r\n");
-    uint8_t teller = 0;
-    uint8_t antiShake = 0;
-
+    uint8_t counter = 0;
     while (1)
     {
         //Checking if an interrupt is registered
@@ -112,17 +85,10 @@ int main(void)
 
         if(accslr_irq2){
         	accslr_irq2 = 0;
-        	teller++;
+        	counter++;
         	uint8_t clk_src;
         	readRegister(&clk_src, LIS3DH_CLICK_SRC);
-        	PRINTF("Click nr.%d, reg: %d \r\n",teller,clk_src);
-
+        	PRINTF("Click nr.%d, click_src out: %d \r\n",counter,clk_src);
         }
-
-        //PRINTF('AntiShake %d',antiShake);
-		//if(antiShake == 0xff){
-		//	PRINTF("Time");
-		//}
-		//antiShake++;
     }
 }
