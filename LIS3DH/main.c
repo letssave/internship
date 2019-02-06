@@ -103,6 +103,8 @@ int main(void)
 	}
     PRINTF("ACC init done, waiting for IR\r\n");
     uint8_t teller = 0;
+    uint8_t antiShake = 0;
+
     while (1)
     {
         //Checking if an interrupt is registered
@@ -113,10 +115,14 @@ int main(void)
         	teller++;
         	uint8_t clk_src;
         	readRegister(&clk_src, LIS3DH_CLICK_SRC);
-        	PRINTF("Click nr.%d, reg: %d",teller,clk_src);
-        	//float test = readFloatAccelX();
-        	//PRINTF("X: %d \r\n", test);
+        	PRINTF("Click nr.%d, reg: %d \r\n",teller,clk_src);
+
         }
 
+        //PRINTF('AntiShake %d',antiShake);
+		//if(antiShake == 0xff){
+		//	PRINTF("Time");
+		//}
+		//antiShake++;
     }
 }

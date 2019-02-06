@@ -383,8 +383,15 @@ void applySettings( void )
 	//Add things if needed bellow this line
 
 }
-
-void accslr_configIntterupts()
+//****************************************************************************//
+//
+//  Configuration of click interrupts
+//
+//	Configures the click-function as well as placing the interrupt on the
+// 	on the int-2 pin.
+//
+//****************************************************************************//
+void accslr_configIntterupts(void)
 {
 	//regs to write
 
@@ -401,13 +408,22 @@ void accslr_configIntterupts()
 	writeRegister(LIS3DH_INT2_CFG, 0x42);
 	//writeRegister(LIS3DH_INT2_CFG, 0x0);
 
-	//Config. for threshold
+	//Config. for interrupt threshold
 	//writeRegister(LIS3DH_INT2_THS, 0xff); //Max threshold
-	writeRegister(LIS3DH_INT2_THS, 0x20);
+	writeRegister(LIS3DH_INT2_THS, 0xff);
+
+}
+/*
+ * Configures the click options
+ * Single click
+ */
+void accslr_configClick(uint_8 click_option)
+{
+	/* Configuration for single-/double-click*/
 
 	//Seting the time limit
-	writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
-	//writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
+	//writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
+	writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
 
 	//Setting the time latency, debouncing
 	writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
@@ -415,7 +431,7 @@ void accslr_configIntterupts()
 	//writeRegister(LIS3DH_TIME_LATENCY, 0x80);
 
 	//Setting the time window click, max time detection procedure can start
-	writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
+	//writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
 	//writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
 	writeRegister(LIS3DH_TIME_WINDOW, 0x80);
 
@@ -425,20 +441,13 @@ void accslr_configIntterupts()
 	//Enable double-click
 	writeRegister(LIS3DH_CLICK_CFG, 0x2a);
 
-	//Interupt high until src is read(0x80)
+	/*Interupt high until src is read(0x80),
+	 * also adjusts the click threshold*/
+
 	//writeRegister(LIS3DH_CLICK_THS, 0x80);
-	writeRegister(LIS3DH_CLICK_THS,0x7f);
-
-}
-/*
- * Configures the click options
- * Single click
- */
-void accslr_configClick()
-{
-
-	// Enable single-click
-	writeRegister(LIS3DH_CLICK_CFG, 0x15);
+	//writeRegister(LIS3DH_CLICK_THS,0x7f);
+	//writeRegister(LIS3DH_CLICK_THS,0x4f);
+	writeRegister(LIS3DH_CLICK_THS,0x40);
 }
 
 volatile uint8_t accslr_irq = 0;
@@ -498,7 +507,7 @@ status_t accelerometer_init(void){
 	applySettings();
 
 	accslr_configIntterupts();
-	//accslr_configClick();
+	accslr_configClick();
 
 	//reset IRQ pending
     uint8_t dataRead;
