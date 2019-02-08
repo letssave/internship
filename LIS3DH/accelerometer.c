@@ -465,27 +465,30 @@ void accslr_configClick(int click_option)
 	}else{
 		/* Configuration for double-click*/
 
-		//Seting the time limit
+		//Setting the time limit
 		//writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
 		writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
 
 		//Setting the time latency, debouncing
-		writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
+		//writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
 		//writeRegister(LIS3DH_TIME_LATENCY, 0xff); //Long latency 637ms
+		//writeRegister(LIS3DH_TIME_LATENCY, 0x2f);
+		writeRegister(LIS3DH_TIME_LATENCY, 0x15);
 
 		//Setting the time window click, max time detection procedure can start
 		//writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
 		//writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
-		writeRegister(LIS3DH_TIME_WINDOW, 0x80);
+		writeRegister(LIS3DH_TIME_WINDOW, 0x5a);
 
 		writeRegister(LIS3DH_CLICK_CFG, 0x00); //reset
 		//Enable double-click
-		writeRegister(LIS3DH_CLICK_CFG, 0x2a);
+		//writeRegister(LIS3DH_CLICK_CFG, 0x2a);
+		writeRegister(LIS3DH_CLICK_CFG, 0x20);
 
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
 		//writeRegister(LIS3DH_CLICK_THS,0x7f);
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x40);
+		writeRegister(LIS3DH_CLICK_THS,0x42);
 	}
 }
 
