@@ -13,6 +13,7 @@
 uint8_t g_master_txBuff[ACCE_I2C_DATA_LENGTH];
 uint8_t g_master_rxBuff[ACCE_I2C_DATA_LENGTH];
 volatile bool acc_g_MasterCompletionFlag = false;
+volatile uint8_t accslr_irq2 = 0;
 
 //This struct holds the settings the driver uses to do calculations
 typedef struct
@@ -394,7 +395,7 @@ void applySettings( void )
 //
 //
 //****************************************************************************//
-void clikcCallbackSetup(void){
+void clickCallbackSetup(void){
     /*Callback setup for click-function start*/
     /* Connect trigger sources to PINT */
     INPUTMUX_Init(INPUTMUX);
@@ -434,37 +435,35 @@ void accslr_configIntterupts(void)
 	writeRegister(LIS3DH_INT2_THS, 0xff); //Max threshold
 }
 
-/*
- * Configures the click options
- *
- *  Input:
- *  	int click_option, if = 1, single click is enabled
- *  	else, double click
- */
-void accslr_configClick(int click_option)
+//****************************************************************************//
+// Configures the click options
+//
+//  Parameters:
+//  	int single_click. if = 1, single click is enabled, else double click
+//****************************************************************************//
+void accslr_configClick(int single_click)
 {
-	if (click_option == 1){
+	if (single_click)
+	{
 		/* Configuration for single-click*/
-
 		//Setting the time limit
 		writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
 
 		//Setting the time latency, for de-bouncing and jittering
-		writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
-
-		//Setting the time window click, max time detection procedure can start
-		writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
+		writeRegister(LIS3DH_TIME_LATENCY, 0x1f); //short latency 52ms
+		writeRegister(LIS3DH_TIME_LATENCY, 0xff);
 
 		//Enable single-click
-		writeRegister(LIS3DH_CLICK_CFG, 0x15);
+		//writeRegister(LIS3DH_CLICK_CFG, 0x15);/axis: x,y and z
+		writeRegister(LIS3DH_CLICK_CFG, 0x10);//axis = z
 
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x40);
+		writeRegister(LIS3DH_CLICK_THS,0x7f);
 
-	}else{
+	}else
+	{
 		/* Configuration for double-click*/
-
 		//Setting the time limit
 		//writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
 		writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
@@ -504,7 +503,6 @@ void acc_int1_callback(void)
     //PRINTF("\f\r\n ACCE INT1 event detected\r\n");
 }
 
-volatile uint8_t accslr_irq2 = 0;
 void acc_int2_callback(pint_pin_int_t pintr, uint32_t pmatch_status)
 {
 	accslr_irq2 = 1;
@@ -553,10 +551,10 @@ status_t accelerometer_init(void){
 	applySettings();
 
 	/*CLICK configurattion start*/
-	clikcCallbackSetup();
+	clickCallbackSetup();
 	accslr_configIntterupts();
 	//Arguments: 1 for single click. 2 for double click
-	accslr_configClick(2);
+	accslr_configClick(1);
 	/*CLICK configurattion end*/
 
 	//reset IRQ pending
