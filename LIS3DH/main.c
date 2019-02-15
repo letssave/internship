@@ -87,7 +87,7 @@ int main(void)
         	counter++;
         	uint8_t clk_src;
         	readRegister(&clk_src, LIS3DH_CLICK_SRC);
-        	//PRINTF("Click nr.%d, click_src out: %d \r\n",counter,clk_src);
+        	PRINTF("Click nr.%d, click_src out: %d \r\n",counter,clk_src);
 
         	uint16_t x = readRawAccelX();
         	uint16_t y = readRawAccelY();

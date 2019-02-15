@@ -396,7 +396,6 @@ void applySettings( void )
 //
 //****************************************************************************//
 void clickCallbackSetup(void){
-    /*Callback setup for click-function start*/
     /* Connect trigger sources to PINT */
     INPUTMUX_Init(INPUTMUX);
     INPUTMUX_AttachSignal(INPUTMUX, kPINT_PinInt2, DEMO_PINT_PIN_INT2_SRC);
@@ -412,7 +411,6 @@ void clickCallbackSetup(void){
 
     /* Enable callbacks for PINT */
     PINT_EnableCallback(PINT);
-    /*Callback setup for click-function end*/
 }
 
 //****************************************************************************//
@@ -459,35 +457,36 @@ void accslr_configClick(int single_click)
 
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x7f);
+		writeRegister(LIS3DH_CLICK_THS,0x4f);
 
 	}else
 	{
 		/* Configuration for double-click*/
 		//Setting the time limit
 		//writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
-		writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
+		//writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
+		writeRegister(LIS3DH_TIME_LIMIT, 0x02);
 
 		//Setting the time latency, debouncing
 		//writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
 		//writeRegister(LIS3DH_TIME_LATENCY, 0xff); //Long latency 637ms
-		//writeRegister(LIS3DH_TIME_LATENCY, 0x2f);
 		writeRegister(LIS3DH_TIME_LATENCY, 0x15);
+		//writeRegister(LIS3DH_TIME_LATENCY, 0x15);
 
 		//Setting the time window click, max time detection procedure can start
 		//writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
 		//writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
-		writeRegister(LIS3DH_TIME_WINDOW, 0x5a);
+		writeRegister(LIS3DH_TIME_WINDOW, 0x5a); //200ms
 
 		writeRegister(LIS3DH_CLICK_CFG, 0x00); //reset
 		//Enable double-click
 		//writeRegister(LIS3DH_CLICK_CFG, 0x2a);
-		writeRegister(LIS3DH_CLICK_CFG, 0x20);
+		writeRegister(LIS3DH_CLICK_CFG, 0x20); //z-axis only
 
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
-		//writeRegister(LIS3DH_CLICK_THS,0x7f);
+		//writeRegister(LIS3DH_CLICK_THS,0x7f); //Max Threshold
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x42);
+		writeRegister(LIS3DH_CLICK_THS,0x5a);
 	}
 }
 
@@ -553,8 +552,8 @@ status_t accelerometer_init(void){
 	/*CLICK configurattion start*/
 	clickCallbackSetup();
 	accslr_configIntterupts();
-	//Arguments: 1 for single click. 2 for double click
-	accslr_configClick(1);
+	//Arguments: 1 for single click. 0 for double click
+	accslr_configClick(0);
 	/*CLICK configurattion end*/
 
 	//reset IRQ pending
