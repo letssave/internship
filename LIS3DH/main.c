@@ -87,12 +87,16 @@ int main(void)
         	counter++;
         	uint8_t clk_src;
         	readRegister(&clk_src, LIS3DH_CLICK_SRC);
-        	PRINTF("Click nr.%d, click_src out: %d \r\n",counter,clk_src);
+        	PRINTF("Click nr.%d.\n\tClick_src out: %x \r\n",counter,clk_src);
+
+        	uint8_t int2_src;
+        	readRegister(&int2_src, LIS3DH_INT2_SRC);
+        	PRINTF("\tint2_src: %x \r\n",int2_src);
 
         	uint16_t x = readRawAccelX();
         	uint16_t y = readRawAccelY();
         	uint16_t z = readRawAccelZ();
-        	PRINTF("x = %d, y = %d, z = %d\n",x,y,z);
+        	PRINTF("\tx = %d, y = %d, z = %d\n",x,y,z);
         }
     }
 }

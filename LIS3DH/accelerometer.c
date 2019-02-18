@@ -295,8 +295,8 @@ void applySettings( void )
 	accslr_settings.tempEnabled = 1;
 
 	//Accelerometer settings
-	accslr_settings.accelSampleRate = 50;  //Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
-	accslr_settings.accelRange = 2;      //Max G force readable.  Can be: 2, 4, 8, 16
+	accslr_settings.accelSampleRate = 5000;  //Hz.  Can be: 0,1,10,25,50,100,200,400,1600,5000 Hz
+	accslr_settings.accelRange = 16;      //Max G force readable.  Can be: 2, 4, 8, 16
 
 	accslr_settings.xAccelEnabled = 1;
 	accslr_settings.yAccelEnabled = 1;
@@ -427,7 +427,9 @@ void accslr_configIntterupts(void)
 	writeRegister(LIS3DH_CTRL_REG6, 0x80);
 
 	//Config for interupt2 - High event interrupt
-	writeRegister(LIS3DH_INT2_CFG, 0x42);
+	//writeRegister(LIS3DH_INT2_CFG, 0x42);
+	//writeRegister(LIS3DH_INT2_CFG, 0xa5); //And interrupt event: z-high & y-low & x-low
+	writeRegister(LIS3DH_INT2_CFG, 0x20); // z-high event
 
 	//Config. for interrupt threshold
 	writeRegister(LIS3DH_INT2_THS, 0xff); //Max threshold
@@ -437,7 +439,7 @@ void accslr_configIntterupts(void)
 // Configures the click options
 //
 //  Parameters:
-//  	int single_click. if = 1, single click is enabled, else double click
+//  	int single_click. if = 1, single click is enabled, 0 = double click
 //****************************************************************************//
 void accslr_configClick(int single_click)
 {
@@ -445,19 +447,19 @@ void accslr_configClick(int single_click)
 	{
 		/* Configuration for single-click*/
 		//Setting the time limit
-		writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
+		writeRegister(LIS3DH_TIME_LIMIT, 0x20); //(0x01)Short time 2.5ms
 
 		//Setting the time latency, for de-bouncing and jittering
-		writeRegister(LIS3DH_TIME_LATENCY, 0x1f); //short latency 52ms
-		writeRegister(LIS3DH_TIME_LATENCY, 0xff);
+		//writeRegister(LIS3DH_TIME_LATENCY, 0x1f); //short latency 52ms
+		writeRegister(LIS3DH_TIME_LATENCY, 0x1f);
 
 		//Enable single-click
-		//writeRegister(LIS3DH_CLICK_CFG, 0x15);/axis: x,y and z
+		//writeRegister(LIS3DH_CLICK_CFG, 0x15);//axis: x,y and z
 		writeRegister(LIS3DH_CLICK_CFG, 0x10);//axis = z
 
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x4f);
+		writeRegister(LIS3DH_CLICK_THS,0x2a);
 
 	}else
 	{
@@ -465,18 +467,18 @@ void accslr_configClick(int single_click)
 		//Setting the time limit
 		//writeRegister(LIS3DH_TIME_LIMIT, 0x01); //Short time 2.5ms
 		//writeRegister(LIS3DH_TIME_LIMIT, 0x33); //Long time 127ms
-		writeRegister(LIS3DH_TIME_LIMIT, 0x02);
+		writeRegister(LIS3DH_TIME_LIMIT, 0x20);
 
 		//Setting the time latency, debouncing
 		//writeRegister(LIS3DH_TIME_LATENCY, 0x15); //short latency 52ms
 		//writeRegister(LIS3DH_TIME_LATENCY, 0xff); //Long latency 637ms
-		writeRegister(LIS3DH_TIME_LATENCY, 0x15);
+		writeRegister(LIS3DH_TIME_LATENCY, 0x1f);
 		//writeRegister(LIS3DH_TIME_LATENCY, 0x15);
 
 		//Setting the time window click, max time detection procedure can start
 		//writeRegister(LIS3DH_TIME_WINDOW, 0x42); //short window 165ms
-		//writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
-		writeRegister(LIS3DH_TIME_WINDOW, 0x5a); //200ms
+		writeRegister(LIS3DH_TIME_WINDOW, 0xff); //long window 637ms
+		//writeRegister(LIS3DH_TIME_WINDOW, 0x5a); //200ms
 
 		writeRegister(LIS3DH_CLICK_CFG, 0x00); //reset
 		//Enable double-click
@@ -486,7 +488,7 @@ void accslr_configClick(int single_click)
 		/*Interupt high until src is read(0x80), also adjusts the click threshold*/
 		//writeRegister(LIS3DH_CLICK_THS,0x7f); //Max Threshold
 		//writeRegister(LIS3DH_CLICK_THS,0x4f);
-		writeRegister(LIS3DH_CLICK_THS,0x5a);
+		writeRegister(LIS3DH_CLICK_THS,0x2a);
 	}
 }
 
